@@ -1,0 +1,17 @@
+{
+  "name": "azathoth",
+  "private": true,
+  "version": "0.0.1",
+  "description": "A GMs support took for GUMSHOE",
+  "main": "index.js",
+  "dependencies": {
+    "typescript": "^3.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "node node_modules/typescript/bin/tsc --build tsconfig.json",
+    "test": "node build/test.js"
+  },
+  "author": "Andrew Brehaut <andrew@brehaut.net>",
+  "license": "BSD"  
+}

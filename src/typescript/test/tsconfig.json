@@ -1,0 +1,12 @@
+{    
+    "extends": "../tsconfig-base.json",
+
+    "compilerOptions": {
+        "outFile": "../../../build/test.js",
+        "composite": true,
+    },
+
+    "references": [  
+        {"path": "../core"},    
+    ]
+}

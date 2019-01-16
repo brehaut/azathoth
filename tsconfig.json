@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "include": [],
+  "references": [
+    {"path": "./src/typescript/core"},
+    {"path": "./src/typescript/ui"},
+    {"path": "./src/typescript/test"}
+  ]
+}

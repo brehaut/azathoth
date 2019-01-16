@@ -1,0 +1,13 @@
+{
+    "extends": "../tsconfig-base.json",
+    
+    "compilerOptions": {
+        "composite": true,
+        "outFile": "../../../build/ui.js",
+        "lib": ["es2016", "dom"]
+    },
+
+    "references": [
+        {"path": "../common"}
+    ]
+}
