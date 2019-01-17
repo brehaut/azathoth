@@ -5,9 +5,11 @@
   "description": "A GMs support took for GUMSHOE",
   "main": "index.js",
   "dependencies": {
+
+  },
+  "devDependencies": {
     "typescript": "^3.2.2"
   },
-  "devDependencies": {},
   "scripts": {
     "build": "node node_modules/typescript/bin/tsc --build tsconfig.json",
     "test": "node build/test.js"
