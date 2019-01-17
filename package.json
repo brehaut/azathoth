@@ -13,5 +13,5 @@
     "test": "node build/test.js"
   },
   "author": "Andrew Brehaut <andrew@brehaut.net>",
-  "license": "BSD"  
+  "license": "BSD"
 }
