@@ -8,10 +8,13 @@ export type Id = number; // This would ideally be a symbol but they need to be t
  * 
  * @type TType The string type that uniquely identifies this record type.
  */                         
-export interface Identifiable<TType extends string> {
+export interface Identifiable<TType extends string = string> {
     type: TType;
     id: Id;
 }
+
+
+export type IdentifiableTypes<T extends Identifiable> = T extends Identifiable<infer TTypes> ? TTypes : never;
 
 /** Scenarios are the top level organisational document. 
  * 
@@ -36,8 +39,8 @@ export interface Act extends Identifiable<"act">{
 };
 
 
-export interface Scope<T extends Identifiable<string>> {
-    type: T extends Identifiable<infer K> ? K : never,
+export interface Scope<T extends Identifiable> {
+    type: IdentifiableTypes<T>,
     id: Id
 }
 
