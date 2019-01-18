@@ -32,7 +32,7 @@ type PublishBridge<T> = (publish: (payload:T) => void) => void;
 
 
 class NaïveHub<T extends Identifiable> implements Hub<T> {
-    private readonly subscriptions = new Map<IdentifiableTags<T>, Map<Id, Set<NaïveSubscription<T>>>>();
+    private readonly subscriptions = new Map<T["tag"], Map<Id, Set<NaïveSubscription<T>>>>();
 
     /**
      *
@@ -44,7 +44,14 @@ class NaïveHub<T extends Identifiable> implements Hub<T> {
     }   
 
     private publish(payload: T) {
-        const subscriptions = this.subscriptionsByTagAndId(payload.tag as IdentifiableTags<T>, payload.id);
+        // This doesnt use the subscriptionsByTagAndId method because that would produce 
+        // new maps and sets based on data not the stuff anything cares about
+        const tagSubs = this.subscriptions.get(payload.tag);
+        if (tagSubs === undefined) return;
+
+        const subscriptions = tagSubs.get(payload.id);
+        if (subscriptions === undefined) return;
+
         subscriptions.forEach(sub => {
             sub.onMessage.raise(payload);
         });
@@ -63,7 +70,17 @@ class NaïveHub<T extends Identifiable> implements Hub<T> {
      * @param sub - the object to remove
      */
     unsubscribe(tag: IdentifiableTags<T>, id: Id, sub: NaïveSubscription<T, T>) {
-        this.subscriptionsByTagAndId(tag, id).delete(sub);
+        const tagSubs = this.subscriptions.get(tag);
+        if (tagSubs === undefined) return;
+
+        const subscriptions = tagSubs.get(id);
+        if (subscriptions === undefined) return;
+
+        // now that we have found the right collection, walk back up the tree removing any empty 
+        // collections
+        subscriptions.delete(sub);
+        if (subscriptions.size === 0) tagSubs.delete(id);
+        if (tagSubs.size === 0) this.subscriptions.delete(tag);
     }
 
 
