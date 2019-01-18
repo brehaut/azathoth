@@ -14,7 +14,7 @@ export interface Hub<T extends Identifiable> {
 
 
 class NaïveSubscription<Hub extends Identifiable, Data extends Hub = Hub> implements Subscription<Data> {
-    readonly onMessage: IListenableTap<Data> = new Tap();
+    readonly onMessage: ITap<Data> = new Tap();
     readonly onUnsubscribe: ITap = new Tap();
 
     constructor(private readonly hub: NaïveHub<Hub>, private readonly tag: IdentifiableTags<Data>, private readonly id: Id) {
@@ -28,8 +28,27 @@ class NaïveSubscription<Hub extends Identifiable, Data extends Hub = Hub> imple
 }
 
 
+type PublishBridge<T> = (publish: (payload:T) => void) => void;
+
+
 class NaïveHub<T extends Identifiable> implements Hub<T> {
     private readonly subscriptions = new Map<IdentifiableTags<T>, Map<Id, Set<NaïveSubscription<T>>>>();
+
+    /**
+     *
+     */
+    constructor(publishBridge:PublishBridge<T>) {
+        publishBridge((payload:T) => {
+            this.publish(payload);
+        });
+    }   
+
+    private publish(payload: T) {
+        const subscriptions = this.subscriptionsByTagAndId(payload.tag as IdentifiableTags<T>, payload.id);
+        subscriptions.forEach(sub => {
+            sub.onMessage.raise(payload);
+        });
+    }
 
     async subscribe<Tag extends IdentifiableTags<T>>(tag:Tag, id: Id): Promise<Subscription<IdentifiableTagsToTypes<T>[Tag]>> {
         const sub = new NaïveSubscription<T, IdentifiableTagsToTypes<T>[Tag]>(this, tag, id);
@@ -72,6 +91,6 @@ class NaïveHub<T extends Identifiable> implements Hub<T> {
 }
 
 
-export function hub<T extends Identifiable>(): Hub<T> {
-    return new NaïveHub();
+export function hub<T extends Identifiable>(publishBridge: PublishBridge<T>): Hub<T> {
+    return new NaïveHub(publishBridge);
 }
